@@ -1,0 +1,27 @@
+# Pull side: research any NSE ticker on demand (started by the app's /api/research route).
+name: research
+on:
+  workflow_dispatch:
+    inputs:
+      ticker: { description: "NSE symbol", required: true }
+concurrency: { group: data-write, cancel-in-progress: false }
+permissions: { contents: write }
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - run: pip install -r requirements.txt
+      - name: Research
+        env: { LLM_BASE_URL: "${{ secrets.LLM_BASE_URL }}", LLM_API_KEY: "${{ secrets.LLM_API_KEY }}", PYTHONUTF8: "1", TICKER: "${{ inputs.ticker }}" }
+        run: |
+          [[ "$TICKER" =~ ^[A-Za-z0-9\&-]{2,15}$ ]] || { echo "bad ticker"; exit 1; }
+          python pipeline/research.py "$TICKER"
+      - name: Commit
+        run: |
+          git config user.name "finn-bot"; git config user.email "finn-bot@users.noreply.github.com"
+          git add web/public/data data/cache
+          git diff --cached --quiet || (git commit -m "data: research ${{ inputs.ticker }}" && git pull --rebase && git push)

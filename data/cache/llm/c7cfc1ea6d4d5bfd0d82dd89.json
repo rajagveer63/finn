@@ -1,0 +1,1 @@
+{"tag": "ledger-extract:1-4103-876d-cdb1f6848d64.pdf:4", "effort": "low", "usage": {"completion_tokens": 20, "prompt_tokens": 493, "total_tokens": 513, "completion_tokens_details": {"reasoning_tokens": 0}, "prompt_tokens_details": {"cached_tokens": 0}}, "out": {"call_date": null, "call_quarter": null, "promises": [], "reported": []}}

@@ -1,0 +1,79 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>FINN wireframe</title>
+<style>
+  body{font-family:system-ui,sans-serif;background:#fafafa;color:#222;margin:24px;display:flex;gap:28px;flex-wrap:wrap}
+  .phone{width:340px;min-height:700px;border:2px solid #444;border-radius:28px;padding:18px 14px 70px;position:relative;background:#fff}
+  h2{font-size:13px;color:#888;margin:0 0 10px;font-weight:500}
+  .play{border:1.5px dashed #555;border-radius:12px;padding:12px;display:flex;gap:10px;align-items:center}
+  .btn{width:38px;height:38px;border:1.5px solid #333;border-radius:50%;display:grid;place-items:center}
+  .seg{display:flex;border:1px solid #999;border-radius:8px;margin:10px 0;font-size:12px}
+  .seg span{flex:1;text-align:center;padding:5px}.seg .on{background:#ddd}
+  .card{border:1px solid #999;border-radius:10px;padding:10px;margin:8px 0;font-size:13px}
+  .hero{border:2px solid #222}
+  .pill{font-size:10px;border:1px solid #333;border-radius:4px;padding:1px 5px;margin-left:6px}
+  table{width:100%;font-size:11px;border-collapse:collapse;margin-top:6px}td,th{border-top:1px solid #ccc;padding:3px;text-align:right}td:first-child,th:first-child{text-align:left}
+  .muted{color:#888;font-size:12px}
+  .tabs{position:absolute;bottom:0;left:0;right:0;border-top:1px solid #999;display:flex;font-size:12px}
+  .tabs span{flex:1;text-align:center;padding:14px 0}.tabs .on{font-weight:700;text-decoration:underline}
+  .row{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #ddd;padding:7px 0;font-size:13px}
+  .bar{height:8px;border:1px solid #555;border-radius:4px;width:90px;position:relative}.bar i{position:absolute;left:0;top:0;bottom:0;background:#999}
+  .live{font-size:10px;color:#555;border:1px dashed #777;border-radius:4px;padding:1px 4px}
+  input{width:100%;box-sizing:border-box;border:1.5px solid #555;border-radius:10px;padding:10px;font-size:13px}
+</style></head><body>
+
+<!-- SCREEN 1: BRIEF. Hierarchy: audio first (the interaction POV), then cards ranked by SURPRISE, routine filings collapsed last. -->
+<div class="phone"><h2>1 · Brief (Push)</h2>
+  <div class="play"><div class="btn">▶</div><div><b>Morning brief · 0:84</b><div class="muted">"Two things matter today. Three don't."</div></div></div>
+  <div class="seg"><span class="on">24h</span><span>7d</span><span>30d</span><span>Custom</span></div>
+  <div class="muted">Updated 06:10 IST <span class="live">live · last sync ok</span></div>
+  <!-- Hero: a promise came due. This is the differentiator; it gets the heaviest border. -->
+  <div class="card hero"><b>Company A</b><span class="pill">PROMISE MISSED</span>
+    <div>Guided 20% revenue growth (concall, 12 Aug). Delivered <b>14% YoY</b>.</div>
+    <table><tr><th></th><th>Q2</th><th>QoQ</th><th>YoY</th></tr>
+      <tr><td>Revenue</td><td>₹1,240 cr</td><td>+3%</td><td>+14%</td></tr>
+      <tr><td>EBITDA</td><td>₹186 cr</td><td>-2%</td><td>+9%</td></tr>
+      <tr><td>PBT</td><td>₹142 cr</td><td>-4%</td><td>+6%</td></tr>
+      <tr><td>PAT</td><td>₹105 cr</td><td>-5%</td><td>+5%</td></tr></table>
+    <div class="muted">Source: results filing · concall Q1 p.7</div></div>
+  <!-- Threshold alert: user-defined "unusual". -->
+  <div class="card"><b>Company B</b><span class="pill">UNUSUAL MOVE</span><div>Volume 3.1× 20-day avg · price −6.2% <span class="muted">(your rule: 2× / ±5%)</span></div></div>
+  <!-- Management change: bio from the filing's own disclosure (LODR), not LinkedIn. -->
+  <div class="card"><b>Company C</b><span class="pill">NEW CFO</span><div>Ex-Deputy CFO at a large FMCG co., 18 yrs, CA. <span class="muted">Profile from filing</span></div></div>
+  <div class="card muted">▸ 14 routine filings (ESOP, compliance, AGM notices)</div>
+  <div class="tabs"><span class="on">Brief</span><span>Ledger</span><span>Ask</span><span>⚙ Rules</span></div>
+</div>
+
+<!-- SCREEN 2: LEDGER. Per-company scorecard of management promises; the "numbers vs narrative" ask, made visual. -->
+<div class="phone"><h2>2 · Ledger (Promises)</h2>
+  <div class="row"><b>Company A</b><span>Kept 3 / 7</span><div class="bar"><i style="width:43%"></i></div></div>
+  <div class="row"><b>Company D</b><span>Kept 5 / 6</span><div class="bar"><i style="width:83%"></i></div></div>
+  <div class="row"><b>Company E</b><span>Kept 2 / 5</span><div class="bar"><i style="width:40%"></i></div></div>
+  <p class="muted" style="margin-top:14px">Company A · last 4 quarters</p>
+  <div class="card"><b>"~20% revenue growth FY27"</b><div class="muted">Said Q4 FY26 call · due Q2 FY27</div><div>Delivered 14% <span class="pill">MISSED</span></div></div>
+  <div class="card"><b>"EBITDA margin 15-16%"</b><div class="muted">Said Q1 FY27 call</div><div>Delivered 15.0% <span class="pill">KEPT</span></div></div>
+  <div class="card"><b>"Plant 2 commissioning by Sept"</b><div class="muted">Said Q4 FY26 call</div><div>Not mentioned since <span class="pill">DROPPED</span></div></div>
+  <div class="card"><b>"Net debt-free by FY28"</b><div class="muted">Said Q2 FY27 call</div><div>— <span class="pill">PENDING</span></div></div>
+  <div class="tabs"><span>Brief</span><span class="on">Ledger</span><span>Ask</span><span>⚙ Rules</span></div>
+</div>
+
+<!-- SCREEN 3: ASK (Pull). Any NSE ticker. Fixed research sections, not free chat, each with a source citation. -->
+<div class="phone"><h2>3 · Ask (Pull, any NSE ticker)</h2>
+  <input value="Research TATAELXSI">
+  <div class="muted" style="margin:8px 0">Reading 2 annual reports + 4 concalls… cached 3 min ago</div>
+  <div class="card"><b>Business</b><div>3 segments; Embedded product design 81% of revenue…</div></div>
+  <div class="card"><b>Financials</b><div>Rev ₹3,800 cr · EBITDA 27% · ROCE 38%</div></div>
+  <div class="card hero"><b>Promised vs delivered (4Q)</b><div>2 kept · 1 missed · 1 dropped →</div></div>
+  <!-- Valuation & ownership: every ratio is shown against its OWN 5y history, never as a bare number. -->
+  <div class="card"><b>Valuation &amp; ownership</b>
+    <table><tr><td>P/E 234</td><td>P/B 84.3</td><td>EV/EBITDA 31</td></tr>
+      <tr><td>ROCE 60%</td><td>ROE 39%</td><td>Div yld 1.96%</td></tr></table>
+    <div class="muted">P/E in top 10% of its 5y range</div>
+    <svg viewBox="0 0 300 60" width="100%" height="60"><rect x="0" y="14" width="300" height="26" fill="#eee"/><line x1="0" y1="27" x2="300" y2="27" stroke="#999" stroke-dasharray="3"/><polyline fill="none" stroke="#222" stroke-width="1.5" points="0,40 40,34 80,30 120,22 160,26 200,18 240,12 300,8"/><text x="2" y="58" font-size="8" fill="#888">P/E band · 5y · median ±1σ</text></svg>
+    <svg viewBox="0 0 300 50" width="100%" height="50"><polygon fill="#bbb" points="0,50 0,28 300,28 300,50"/><polygon fill="#888" points="0,28 0,20 150,21 300,24 300,28"/><polygon fill="#555" points="0,20 0,16 150,15 300,18 300,24 150,21"/><text x="2" y="9" font-size="8" fill="#888">Promoter 43.9 · FII 8.0 ▼5.3pp · DII 10.0 ▲2.5pp (8 qtrs)</text></svg>
+  </div>
+  <div class="card"><b>Cash quality</b><div>CFO/PAT 0.92 over 3 yrs</div></div>
+  <div class="card"><b>Bull / Bear</b><div>▸ tap to expand</div></div>
+  <div class="muted">Every line links to page in source PDF.</div>
+  <div class="tabs"><span>Brief</span><span>Ledger</span><span class="on">Ask</span><span>⚙ Rules</span></div>
+</div>
+</body></html>

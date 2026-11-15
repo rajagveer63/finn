@@ -1,0 +1,10 @@
+{
+  "name": "FINN",
+  "short_name": "FINN",
+  "description": "What changed in your portfolio, and whether management kept its word.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f2f3ef",
+  "theme_color": "#0b5c6b",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
