@@ -4,7 +4,7 @@ Hello,
 
 My FINN submission:
 
-- Prototype (open on a phone): <VERCEL_URL>
+- Prototype (open on a phone): https://finn-pied.vercel.app
 - Code: https://github.com/rajagveer63/finn
 - AI build history: https://github.com/rajagveer63/finn/tree/main/docs/build-history (every Claude Code session, exported from the local transcripts; API key redacted)
 
