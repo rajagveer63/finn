@@ -8,7 +8,7 @@ A mobile-first investor agent built for the ENAM "FINN" AI Engineer build challe
 |---|---|
 | **Brief** (Push, digest) | Filings and price moves for an 18-company portfolio, for the last 24h / 7d / 30d / 90d. Ranked by how surprising they are, not just by filing type. One card per story (follow-ups fold under the latest update). Routine filings are collapsed into one row. A 40-second spoken brief reads the top items, and each spoken line jumps to its card. |
 | **Ledger** | The Promise Ledger. Every number management promised on its last six earnings calls, with the date and page it was said, what happened, and whether it was **kept, missed, revised or dropped**. Built for Infosys, HCLTech, L&T and Polycab, plus every company researched on demand. |
-| **Research** (Pull) | Any NSE symbol. Valuation against the company's own five years (P/E, P/B, EV/EBITDA, ROCE, ROE, dividend yield, P/E band chart), shareholding over 12 quarters, revenue and profit trajectory, cash quality, and a bull / bear / watch list in which **every point carries a verbatim quote and page from a transcript**. |
+| **Research** (Pull) | Any NSE company, searched by name or symbol ("tata steel" → TATASTEEL), researched live in about 10 seconds. Valuation against the company's own five years (P/E, P/B, EV/EBITDA, ROCE, ROE, dividend yield, P/E band chart), a shareholding donut plus 12-quarter trend, revenue and profit trajectory, cash quality, and a bull / bear / watch list in which **every point carries a verbatim quote and page from a transcript**. |
 | **Rules** (Push, alerts) | Thresholds you set on the phone: volume spike (×20-day average), daily price move (±%), FII change, promoter selling, P/E leaving its band, and which filing types alert you. The alert count for the last 30 days updates as you drag. "Send a test alert" fires a real notification. |
 
 ## Data: three sources, all primary
@@ -29,9 +29,9 @@ GitHub Actions (cron, every 30 min on market days)          Vercel (Next.js 16, 
     prices.py      yfinance EOD                                      Brief / Ledger / Research / Rules
     screener.py    fundamentals + document links                     ranking + thresholds run on the phone
     announcements  NSE filings                                       (rules live in localStorage)
-    classify.py    regex rules -> 17 categories, 3 tiers           /api/research?ticker=X
-    enrich.py      LLM only where rules are unsure                    -> serves repo JSON if it exists
-    metrics.py     valuation, ownership, cash quality                -> else starts research.yml (workflow_dispatch)
+    classify.py    regex rules -> 17 categories, 3 tiers           /api/search   name -> NSE symbol
+    enrich.py      LLM only where rules are unsure                    /api/company  live fundamentals (lib/live.ts)
+    metrics.py     valuation, ownership, cash quality                /api/snapshot grounded bull/bear, quote-checked
   pipeline/ledger.py    promises from transcripts + judge
   pipeline/research.py  any ticker: fundamentals + ledger + grounded snapshot
   -> commits web/public/data/*.json  ------------------------------>  redeploy
@@ -60,12 +60,12 @@ python pipeline/research.py TCS # research any NSE ticker
 cd web && npm install && npm run dev
 ```
 
-Deploy: import the repo in Vercel with **root directory `web`**. For on-demand research of new tickers, set `GH_DISPATCH_TOKEN` (a fine-grained token with Actions: write on this repo) in Vercel, and `LLM_BASE_URL` / `LLM_API_KEY` as GitHub Actions secrets.
+Deploy: import the repo in Vercel with **root directory `web`**, and set `LLM_BASE_URL` / `LLM_API_KEY` in Vercel (for live research) and as GitHub Actions secrets (for the scheduled refresh). Optional: `GH_DISPATCH_TOKEN` lets `/api/research` start `research.yml`, which also builds a promise ledger for a new ticker.
 
 ## Known limits
 
 - NSE often blocks cloud IP ranges. If the scheduled job cannot reach NSE, the feed keeps its last good data and the header shows when it last synced.
-- Researching a new ticker takes 2-4 minutes the first time (it reads six transcripts); after that it loads instantly.
+- Live research reads one transcript, so it takes about 10 seconds the first time and is cached for a day. A full promise ledger (six transcripts) is built by the pipeline for tracked companies.
 - Alerts are in-app and browser notifications while the app is open. Background Web Push was cut for time.
 - Not investment advice.
 

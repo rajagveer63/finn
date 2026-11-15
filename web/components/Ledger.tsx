@@ -1,7 +1,8 @@
 "use client";
 import { useMemo, useState } from "react";
 import { day, type Holding, type Ledger as LedgerT, type Promise_ } from "@/lib/finn";
-import { Card, Section, SourceLink, STATUS } from "./ui";
+import { Avatar, Card, Section, SourceLink, STATUS } from "./ui";
+import { ScoreBar } from "./Company";
 
 type Props = { ledgers: Record<string, LedgerT>; holdings: Holding[]; ticker: string | null; onTicker: (t: string) => void; onCompany: (t: string) => void };
 
@@ -37,7 +38,8 @@ export default function Ledger({ ledgers, holdings, ticker, onTicker, onCompany 
   const promises = useMemo(() => (L ? merge(L.promises) : []), [L]);
   if (!L) return <Card><p className="text-[14px] text-muted">No ledger has been built yet.</p></Card>;
 
-  const s = L.score;
+  const cnt = (...st: string[]) => promises.filter((p) => st.includes(p.status)).length;
+  const s = { ...L.score, kept: cnt("KEPT"), missed: cnt("MISSED"), dropped: cnt("DROPPED"), settled: cnt("KEPT", "MISSED"), pending: cnt("PENDING", "UNVERIFIED"), revised: promises.filter((p) => p.revised).length, total: promises.length };
   const callsOk = L.calls.filter((c) => !c.error);
   const without = holdings.filter((h) => !ledgers[h.ticker]).length;
 
@@ -46,23 +48,31 @@ export default function Ledger({ ledgers, holdings, ticker, onTicker, onCompany 
       <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1" role="tablist" aria-label="Company">
         {tickers.map((k) => (
           <button key={k} role="tab" aria-selected={k === t} onClick={() => onTicker(k)}
-            className={`h-10 shrink-0 rounded-full border px-4 text-[13px] font-semibold ${k === t ? "border-ink bg-ink text-bg" : "border-line bg-surface text-muted"}`}>
+            className={`flex h-10 shrink-0 items-center gap-2 rounded-full border py-1 pl-1 pr-3.5 text-[13px] font-semibold ${k === t ? "border-transparent bg-ink text-bg" : "border-line bg-surface text-muted"}`}>
+            <Avatar t={k} name={ledgers[k].name} size={30} />
             {short(ledgers[k].name)}
           </button>
         ))}
       </div>
 
       <div className="mt-3">
-        <Card hero>
-          <p className="text-[12px] font-semibold uppercase tracking-wide text-muted">Did management keep its word?</p>
-          <p className="mt-1 text-[26px] font-semibold leading-tight">
-            <span className="num">{s.kept}</span> of <span className="num">{s.settled}</span> kept
+        <section className="hero rise rounded-[22px] p-4 shadow-lg">
+          <div className="flex items-center gap-3">
+            <Avatar t={t} name={L.name} size={40} />
+            <div className="min-w-0">
+              <p className="text-[12px] font-semibold uppercase tracking-wide opacity-75">Did management keep its word?</p>
+              <p className="truncate text-[15px] font-bold">{short(L.name)}</p>
+            </div>
+          </div>
+          <p className="mt-3 text-[30px] font-bold leading-none">
+            <span className="num">{s.kept}</span> <span className="text-[18px] font-semibold opacity-75">of</span> <span className="num">{s.settled}</span>
+            <span className="text-[18px] font-semibold opacity-75"> due promises kept</span>
           </p>
-          <p className="text-[13px] text-muted">
-            of the promises that have come due · {s.revised} revised along the way · {s.pending} still open
-          </p>
-          {L.read && <p className="mt-2.5 text-[14.5px] leading-snug">{L.read}</p>}
-          <p className="mt-2.5 border-t border-line pt-2 text-[11.5px] leading-snug text-muted">
+          <div className="[&_.text-muted]:text-white/75"><ScoreBar s={s} /></div>
+          {L.read && <p className="mt-3 rounded-xl bg-black/20 p-3 text-[14px] leading-snug">{L.read}</p>}
+        </section>
+        <Card className="mt-3">
+          <p className="text-[12px] leading-snug text-muted">
             Built from {callsOk.length} earnings-call transcripts ({callsOk[callsOk.length - 1]?.quarter} to {callsOk[0]?.quarter}). Every line is a
             quote with its date and page. Numeric targets are checked by arithmetic on reported financials where possible; the rest are judged
             by the model from later calls and marked so.

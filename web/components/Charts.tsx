@@ -83,7 +83,7 @@ const OWN: [string, string, string][] = [
   ["promoter", "Promoters", "var(--s1)"], ["fii", "FIIs", "var(--s2)"], ["dii", "DIIs", "var(--s3)"], ["public", "Public & others", "var(--s4)"],
 ];
 
-export function Ownership({ quarters, series }: { quarters: string[]; series: Record<string, (number | null)[]> }) {
+export function Ownership({ quarters, series, table = true }: { quarters: string[]; series: Record<string, (number | null)[]>; table?: boolean }) {
   const W = 340, H = 150, L = 4, R = 4, T = 6, B = 18;
   const n = quarters.length;
   const { ref, i, handlers } = useScrub(n, L, W - R, W);
@@ -116,7 +116,7 @@ export function Ownership({ quarters, series }: { quarters: string[]; series: Re
         <text x={L} y={H - 4} fontSize="9.5" fill="var(--muted)">{quarters[0]}</text>
         <text x={W - R} y={H - 4} textAnchor="end" fontSize="9.5" fill="var(--muted)">{quarters[n - 1]}</text>
       </svg>
-      <table className="mt-1 w-full text-[13px]">
+      {table && <table className="mt-1 w-full text-[13px]">
         <tbody>
           {[...rows].map((r) => {
             const d = sel > 0 ? r.v[sel] - r.v[sel - 1] : null;
@@ -131,7 +131,7 @@ export function Ownership({ quarters, series }: { quarters: string[]; series: Re
             );
           })}
         </tbody>
-      </table>
+      </table>}
     </div>
   );
 }
@@ -162,6 +162,58 @@ export function Bars({ labels, values, unit = "₹ cr" }: { labels: string[]; va
       <p className="mt-1 text-[11.5px] text-muted">
         {labels[k]?.replace("Mar ", "FY")}: <span className="num text-ink">{values[k] == null ? "–" : Math.round(values[k]!).toLocaleString("en-IN")}</span> {unit}
       </p>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------ shareholding donut
+
+export function Donut({ latest, change, quarter }: { latest: Record<string, number | null>; change: Record<string, number | null>; quarter: string }) {
+  const [hi, setHi] = useState<string | null>(null);
+  const parts = OWN.map(([k, label, color]) => ({
+    k, label, color,
+    v: (latest[k] ?? 0) + (k === "public" ? latest.government ?? 0 : 0),
+    d: k === "public" && change.government != null && change.public != null ? change.public + change.government : change[k],
+  })).filter((p) => p.v > 0.005);
+  const total = parts.reduce((s, p) => s + p.v, 0) || 100;
+  const R = 70, r = 46, C = 90, gap = 0.012;
+  let a0 = -Math.PI / 2;
+  const arcs = parts.map((p) => {
+    const sweep = (p.v / total) * Math.PI * 2;
+    const s = a0 + (parts.length > 1 ? gap : 0), e = a0 + sweep - (parts.length > 1 ? gap : 0);
+    a0 += sweep;
+    const big = e - s > Math.PI ? 1 : 0;
+    const pt = (rad: number, ang: number) => `${(C + rad * Math.cos(ang)).toFixed(2)},${(C + rad * Math.sin(ang)).toFixed(2)}`;
+    return { ...p, d: `M${pt(R, s)}A${R},${R} 0 ${big} 1 ${pt(R, e)}L${pt(r, e)}A${r},${r} 0 ${big} 0 ${pt(r, s)}Z`, delta: p.d };
+  });
+  const focus = arcs.find((a) => a.k === hi) ?? arcs[0];
+  if (!focus) return <p className="text-[13px] text-muted">No shareholding data.</p>;
+  return (
+    <div className="flex items-center gap-4">
+      <svg viewBox="0 0 180 180" className="w-[46%] max-w-[180px] shrink-0" role="img"
+        aria-label={`Shareholding, ${quarter}: ${arcs.map((a) => `${a.label} ${a.v.toFixed(1)}%`).join(", ")}`}>
+        {arcs.map((a) => (
+          <path key={a.k} d={a.d} fill={a.color} opacity={hi && hi !== a.k ? 0.35 : 1}
+            onPointerEnter={() => setHi(a.k)} onPointerDown={() => setHi(a.k)} onPointerLeave={() => setHi(null)} />
+        ))}
+        <text x={C} y={C - 4} textAnchor="middle" fontSize="22" fontWeight="700" fill="var(--ink)" className="num">{focus.v.toFixed(1)}%</text>
+        <text x={C} y={C + 15} textAnchor="middle" fontSize="11" fill="var(--muted)">{focus.label}</text>
+      </svg>
+      <ul className="min-w-0 flex-1">
+        {arcs.map((a) => (
+          <li key={a.k}>
+            <button onClick={() => setHi(hi === a.k ? null : a.k)} className={`flex w-full items-center gap-2 rounded-lg px-1.5 py-1.5 text-left ${hi === a.k ? "bg-sunk" : ""}`}>
+              <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ background: a.color }} />
+              <span className="min-w-0 flex-1 truncate text-[13px]">{a.label}</span>
+              <span className="num text-[13px] font-semibold">{a.v.toFixed(1)}%</span>
+              <span className={`num w-[52px] text-right text-[11.5px] ${a.delta == null || Math.abs(a.delta) < 0.005 ? "text-muted" : a.delta > 0 ? "text-good" : "text-bad"}`}>
+                {a.delta == null ? "–" : `${a.delta > 0 ? "+" : a.delta < 0 ? "−" : ""}${Math.abs(a.delta).toFixed(2)}`}
+              </span>
+            </button>
+          </li>
+        ))}
+        <li className="px-1.5 pt-1 text-[11px] text-muted">{quarter} · change in pp vs last quarter</li>
+      </ul>
     </div>
   );
 }
