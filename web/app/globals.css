@@ -1,52 +1,30 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #f4f3ee;
-  --surface: #ffffff;
-  --sunk: #efeee8;
-  --ink: #15171a;
-  --muted: #6b6f76;
-  --line: #e4e2da;
-  --accent: #0f6b6b;
-  --accent-soft: #dcefec;
-  --bad: #c0362c;
-  --bad-soft: #fbe8e5;
-  --good: #0d7a4c;
-  --good-soft: #e0f3e9;
-  --warn: #a35d00;
-  --warn-soft: #fcefd5;
-  --idle: #5f6670;
-  --idle-soft: #eceef0;
-  --hero-a: #0f3d3e;
-  --hero-b: #155e5a;
+  /* FINN fintech theme: dark-first, lime accent. Mirrors the Figma file "FINN — Fintech UI". */
+  color-scheme: dark;
+  --bg: #08090b;
+  --surface: #121418;
+  --sunk: #1a1d23;
+  --ink: #f4f5f7;
+  --muted: #8c93a1;
+  --line: #23262e;
+  --accent: #c8f560;
+  --accent-soft: #232b12;
+  --on-accent: #0b0d0a;
+  --bad: #ff5c6c;
+  --bad-soft: #2e1418;
+  --good: #3ddc97;
+  --good-soft: #10291f;
+  --warn: #ffb547;
+  --warn-soft: #2e2310;
+  --idle: #a2aab5;
+  --idle-soft: #1f232a;
+  --hero-a: #c8f560;
+  --hero-b: #c8f560;
   /* chart series: fixed order, bound to entities (promoter, FII, DII, public) */
-  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #8a8780;
-  --grid: #e1e0d9;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0b0d10;
-    --surface: #14181d;
-    --sunk: #1b2027;
-    --ink: #eceef1;
-    --muted: #949ca7;
-    --line: #242a32;
-    --accent: #5fd0c4;
-    --accent-soft: #12302e;
-    --bad: #f28b82;
-    --bad-soft: #36191a;
-    --good: #5fd39f;
-    --good-soft: #11301f;
-    --warn: #f2bb62;
-    --warn-soft: #382a10;
-    --idle: #a2aab5;
-    --idle-soft: #222831;
-    --hero-a: #0f2a2c;
-    --hero-b: #123f3d;
-    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #8a8780;
-    --grid: #2c2c2a;
-  }
+  --s1: #8b9cff; --s2: #ff8a4c; --s3: #3ddc97; --s4: #ffb547; --s5: #8a8780;
+  --grid: #23262e;
 }
 
 @theme inline {
@@ -82,8 +60,8 @@ button { cursor: pointer; }
 input[type="range"] { accent-color: var(--accent); }
 .no-bar { scrollbar-width: none; }
 .no-bar::-webkit-scrollbar { display: none; }
-.hero { background: linear-gradient(135deg, var(--hero-a), var(--hero-b)); color: #f2f6f5; }
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.04); }
+.hero { background: var(--accent); color: var(--on-accent); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; }
 .tap { transition: transform 0.12s ease; }
 .tap:active { transform: scale(0.985); }
 .safe-b { padding-bottom: env(safe-area-inset-bottom); }

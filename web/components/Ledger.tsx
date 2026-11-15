@@ -56,7 +56,7 @@ export default function Ledger({ ledgers, holdings, ticker, onTicker, onCompany 
       </div>
 
       <div className="mt-3">
-        <section className="hero rise rounded-[22px] p-4 shadow-lg">
+        <section className="hero rise rounded-[28px] p-5">
           <div className="flex items-center gap-3">
             <Avatar t={t} name={L.name} size={40} />
             <div className="min-w-0">
@@ -68,8 +68,8 @@ export default function Ledger({ ledgers, holdings, ticker, onTicker, onCompany 
             <span className="num">{s.kept}</span> <span className="text-[18px] font-semibold opacity-75">of</span> <span className="num">{s.settled}</span>
             <span className="text-[18px] font-semibold opacity-75"> due promises kept</span>
           </p>
-          <div className="[&_.text-muted]:text-white/75"><ScoreBar s={s} /></div>
-          {L.read && <p className="mt-3 rounded-xl bg-black/20 p-3 text-[14px] leading-snug">{L.read}</p>}
+          <div className="[&_.text-muted]:text-black/60"><ScoreBar s={s} /></div>
+          {L.read && <p className="mt-3 rounded-2xl bg-black/10 p-3 text-[14px] leading-snug">{L.read}</p>}
         </section>
         <Card className="mt-3">
           <p className="text-[12px] leading-snug text-muted">

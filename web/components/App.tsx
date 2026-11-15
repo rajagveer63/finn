@@ -116,7 +116,7 @@ export default function App() {
           {([["brief", "Brief"], ["ledger", "Ledger"], ["research", "Research"], ["rules", "Alerts"]] as [Tab, string][]).map(([k, label]) => (
             <button key={k} onClick={() => { if (k === "research" && tab === "research") setCompany(null); go(k); }} aria-current={tab === k ? "page" : undefined}
               className="flex h-[52px] flex-col items-center justify-center gap-0.5 text-[11px] font-semibold">
-              <span className={`grid h-7 w-14 place-items-center rounded-full transition-colors ${tab === k ? "bg-accent-soft text-accent" : "text-muted"}`}><Icon name={k} on={tab === k} /></span>
+              <span className={`grid h-7 w-14 place-items-center rounded-full transition-colors ${tab === k ? "bg-accent text-[#0b0d0a]" : "text-muted"}`}><Icon name={k} on={tab === k} /></span>
               <span className={tab === k ? "text-ink" : "text-muted"}>{label}</span>
             </button>
           ))}
@@ -170,15 +170,15 @@ function Finder({ holdings, adhoc, onOpen }: { holdings: Holding[]; adhoc: Holdi
 
   return (
     <div>
-      <section className="hero rise rounded-[22px] p-4">
+      <section className="hero rise rounded-[28px] p-5">
         <h2 className="text-[21px] font-bold leading-tight">Research any NSE company</h2>
         <p className="mt-1 text-[13px] opacity-80">From annual reports, earnings-call transcripts and reported financials only.</p>
         <form className="relative mt-3" onSubmit={(e) => { e.preventDefault(); submit(); }}>
-          <svg className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#5c6b6a]" width="18" height="18" viewBox="0 0 24 24" aria-hidden>
+          <svg className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8c93a1]" width="18" height="18" viewBox="0 0 24 24" aria-hidden>
             <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" strokeWidth="2" /><path d="M16 16l4.5 4.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Name or symbol, e.g. Tata Steel" autoCorrect="off" spellCheck={false} aria-label="Search companies"
-            className="h-12 w-full rounded-xl bg-white pl-11 pr-4 text-[16px] text-[#15171a] outline-none placeholder:text-[#8a9190] focus:ring-2 focus:ring-[#5fd0c4]" />
+            className="h-12 w-full rounded-2xl bg-[#0b0d0a] pl-11 pr-4 text-[16px] text-[#f4f5f7] outline-none placeholder:text-[#8c93a1] focus:ring-2 focus:ring-[#0b0d0a]/40" />
         </form>
       </section>
 
@@ -208,7 +208,7 @@ function Finder({ holdings, adhoc, onOpen }: { holdings: Holding[]; adhoc: Holdi
 function Skeleton() {
   return (
     <div className="flex flex-col gap-3" aria-busy="true" aria-label="Loading">
-      <div className="hero shimmer h-[150px] rounded-[22px]" />
+      <div className="hero shimmer h-[150px] rounded-[28px]" />
       {[44, 150, 150].map((h, i) => <div key={i} className="shimmer rounded-2xl bg-sunk" style={{ height: h }} />)}
     </div>
   );

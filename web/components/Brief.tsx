@@ -47,16 +47,16 @@ export default function Brief({ feed, moves, holdings, ledgers, rules, now, onCo
 
   return (
     <div>
-      <section className="hero rise rounded-[22px] p-4 shadow-lg">
+      <section className="hero rise rounded-[28px] p-5">
         <p className="text-[13px] font-medium opacity-75">{hello}</p>
         <h2 className="mt-0.5 text-[23px] font-bold leading-tight">
           {brief.top.length ? <>{brief.top.length} {brief.top.length === 1 ? "thing needs" : "things need"} you</> : "A quiet stretch"}
           <span className="opacity-60"> · {label}</span>
         </h2>
         <div className="mt-2.5 flex flex-wrap gap-1.5 text-[11.5px] font-semibold">
-          <span className="rounded-full bg-white/15 px-2.5 py-1">{brief.notable.length} worth a line</span>
-          <span className="rounded-full bg-white/15 px-2.5 py-1">{brief.routine.length} routine, hidden</span>
-          <span className="rounded-full bg-white/15 px-2.5 py-1">{up} up · {down} down</span>
+          <span className="rounded-full bg-black/10 px-2.5 py-1">{brief.notable.length} worth a line</span>
+          <span className="rounded-full bg-black/10 px-2.5 py-1">{brief.routine.length} routine, hidden</span>
+          <span className="rounded-full bg-black/10 px-2.5 py-1">{up} up · {down} down</span>
         </div>
         <AudioBrief lines={lines} onJump={jump} />
       </section>
@@ -182,10 +182,10 @@ function AudioBrief({ lines, onJump }: { lines: { id: string | null; text: strin
   const playing = idx >= 0;
 
   return (
-    <div className="mt-4 rounded-2xl bg-black/20 p-3">
+    <div className="mt-4 rounded-[20px] bg-[#0b0d0a] p-3 text-ink">
       <div className="flex items-center gap-3">
         <button onClick={() => (playing ? stop() : play(0))} aria-label={playing ? "Stop the spoken brief" : "Play the spoken brief"} disabled={!supported}
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white text-[#0f3d3e] shadow disabled:opacity-40">
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-accent text-[#0b0d0a] disabled:opacity-40">
           {playing
             ? <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden><rect x="2" y="2" width="12" height="12" rx="2" fill="currentColor" /></svg>
             : <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden><path d="M4 2.5v11l9-5.5z" fill="currentColor" /></svg>}
@@ -194,7 +194,7 @@ function AudioBrief({ lines, onJump }: { lines: { id: string | null; text: strin
           <p className="text-[14px] font-semibold leading-tight">{playing ? `Playing · ${idx + 1} of ${lines.length}` : "Listen to your brief"}</p>
           <p className="truncate text-[12px] opacity-70">{supported ? (playing ? lines[idx]?.text : `About ${secs} seconds`) : "This browser cannot speak."}</p>
         </div>
-        <span className={`eq ${playing ? "on" : ""} opacity-70`} aria-hidden><span /><span /><span /><span /><span /></span>
+        <span className={`eq ${playing ? "on" : ""} text-accent`} aria-hidden><span /><span /><span /><span /><span /></span>
       </div>
       <button onClick={() => setOpen((o) => !o)} aria-expanded={open} className="mt-2 text-[12px] font-semibold opacity-80">{open ? "Hide script" : "Read the script"}</button>
       {open && (
@@ -202,7 +202,7 @@ function AudioBrief({ lines, onJump }: { lines: { id: string | null; text: strin
           {lines.map((l, i) => (
             <li key={i}>
               <button onClick={() => { onJump(l.id); play(i); }}
-                className={`w-full rounded-lg px-2 py-1.5 text-left text-[13px] leading-snug ${idx === i ? "bg-white/15 font-medium" : "opacity-80"}`}>{l.text}</button>
+                className={`w-full rounded-lg px-2 py-1.5 text-left text-[13px] leading-snug ${idx === i ? "bg-white/10 font-medium text-accent" : "opacity-80"}`}>{l.text}</button>
             </li>
           ))}
         </ol>

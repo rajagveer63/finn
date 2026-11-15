@@ -30,14 +30,14 @@ export default function Rules({ rules, onRules, feed, moves, holdings, ledgers, 
 
   return (
     <div>
-      <Card hero>
+      <section className="hero rise rounded-[28px] p-5 [&_.text-muted]:text-black/60">
         <p className="text-[12px] font-semibold uppercase tracking-wide text-muted">With these rules</p>
         <p className="mt-1 text-[24px] font-semibold leading-tight"><span className="num">{alerts}</span> alerts in the last 30 days</p>
         <p className="text-[13px] text-muted">
           {moveHits} price or volume · {ownHits} ownership · {peHits} valuation · {b30.routine.length} routine filings kept out of your way
         </p>
         <p className="mt-2 text-[12px] leading-snug text-muted">Move a slider and this number changes at once: the rules run on your phone, against the same filings and prices.</p>
-      </Card>
+      </section>
 
       <Section title="Price and volume">
         <Card>

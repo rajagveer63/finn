@@ -74,7 +74,7 @@ export default function Company({ ticker, ledger, dayPct, onBack, onLedger }: {
   );
   if (st.s === "loading") return (
     <div>{back}
-      <div className="hero shimmer h-[168px] rounded-[22px]" />
+      <div className="hero shimmer h-[168px] rounded-[28px]" />
       <div className="mt-3 grid grid-cols-3 gap-2">{[0, 1, 2, 3, 4, 5].map((i) => <div key={i} className="shimmer h-[70px] rounded-2xl bg-sunk" />)}</div>
       <p className="mt-3 text-center text-[13px] text-muted">Reading {ticker}&apos;s reported financials…</p>
     </div>
@@ -97,7 +97,7 @@ export default function Company({ ticker, ledger, dayPct, onBack, onLedger }: {
   return (
     <div>
       {back}
-      <section className="hero rise rounded-[22px] p-4 shadow-lg">
+      <section className="hero rise rounded-[28px] p-5">
         <div className="flex items-center gap-3">
           <Avatar t={c.ticker} name={c.name} size={44} />
           <div className="min-w-0 flex-1">
@@ -110,13 +110,13 @@ export default function Company({ ticker, ledger, dayPct, onBack, onLedger }: {
             <p className="num text-[30px] font-bold leading-none">₹{num(price, 2)}</p>
             <p className="mt-1.5 text-[12px] opacity-75">Market cap {cr(snapM.market_cap)}</p>
           </div>
-          {dayPct != null && <span className={`num rounded-lg px-2 py-1 text-[13px] font-bold ${dayPct >= 0 ? "bg-[#1f8f5f]" : "bg-[#b5382f]"}`}>{dayPct >= 0 ? "▲" : "▼"} {Math.abs(dayPct).toFixed(2)}%</span>}
+          {dayPct != null && <span className={`num rounded-lg px-2 py-1 text-[13px] font-bold ${dayPct >= 0 ? "bg-[#0b0d0a] text-good" : "bg-[#0b0d0a] text-bad"}`}>{dayPct >= 0 ? "▲" : "▼"} {Math.abs(dayPct).toFixed(2)}%</span>}
         </div>
         {pos != null && hl && (
           <div className="mt-4">
-            <div className="relative h-1.5 rounded-full bg-white/20">
-              <div className="absolute inset-y-0 left-0 rounded-full bg-white/60" style={{ width: `${pos}%` }} />
-              <div className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-[#0f3d3e]" style={{ left: `${pos}%` }} />
+            <div className="relative h-1.5 rounded-full bg-black/15">
+              <div className="absolute inset-y-0 left-0 rounded-full bg-black/60" style={{ width: `${pos}%` }} />
+              <div className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-[#0b0d0a] bg-accent" style={{ left: `${pos}%` }} />
             </div>
             <div className="mt-1.5 flex justify-between text-[11px] opacity-75"><span className="num">52w low ₹{num(hl[1], 0)}</span><span className="num">high ₹{num(hl[0], 0)}</span></div>
           </div>
