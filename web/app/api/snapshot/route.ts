@@ -10,7 +10,7 @@ export async function GET(req: Request) {
     const r = await snapshot(t);
     return ok(r, r.research ? 200 : 503);
   } catch (e) {
-    const m = e instanceof Error ? e.message : "";
-    return ok({ research: null, reason: m === "no-llm" ? "The model key is not set on this deployment." : "Could not read the filings just now. Try again in a minute." }, 503);
+    const m = e instanceof Error ? e.message : String(e);
+    return ok({ research: null, reason: `Could not build the debate: ${m}.` }, 503);
   }
 }

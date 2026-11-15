@@ -203,11 +203,26 @@ function grounded(points: Pt[] | undefined, pages: string[], offset: number, url
   return out;
 }
 
+/** BSE links come as AnnPdfOpen.aspx?Pname=X.pdf, which redirects; try the direct archive paths too. */
+function pdfCandidates(url: string) {
+  const m = url.match(/Pname=([0-9a-f-]+\.pdf)/i);
+  return m ? [`https://www.bseindia.com/xml-data/corpfiling/AttachHis/${m[1]}`, `https://www.bseindia.com/xml-data/corpfiling/AttachLive/${m[1]}`, url] : [url];
+}
+
+export class StepError extends Error { constructor(public step: string, msg: string) { super(msg); } }
+
 async function pdfPages(url: string, maxPages: number, from = 0): Promise<string[]> {
-  const r = await fetch(url, { headers: UA, cache: "no-store", signal: AbortSignal.timeout(20000) });
-  if (!r.ok || !(r.headers.get("content-type") ?? "").includes("pdf")) throw new Error(`pdf ${r.status}`);
+  let buf: ArrayBuffer | null = null, last = "";
+  for (const u of pdfCandidates(url)) {
+    try {
+      const r = await fetch(u, { headers: { ...UA, accept: "application/pdf,*/*", referer: "https://www.bseindia.com/" }, cache: "no-store", signal: AbortSignal.timeout(15000) });
+      if (r.ok && (r.headers.get("content-type") ?? "").includes("pdf")) { buf = await r.arrayBuffer(); break; }
+      last = `HTTP ${r.status}`;
+    } catch (e) { last = e instanceof Error ? e.name : "network error"; }
+  }
+  if (!buf) throw new StepError("pdf", `the exchange's document server refused the download (${last})`);
   const { getDocumentProxy } = await import("unpdf");
-  const pdf = await getDocumentProxy(new Uint8Array(await r.arrayBuffer()));
+  const pdf = await getDocumentProxy(new Uint8Array(buf));
   const out: string[] = [];
   for (let i = from + 1; i <= Math.min(pdf.numPages, from + maxPages); i++) {
     const tc = await (await pdf.getPage(i)).getTextContent();
@@ -218,13 +233,13 @@ async function pdfPages(url: string, maxPages: number, from = 0): Promise<string
 
 async function llm(user: string) {
   const base = (process.env.LLM_BASE_URL ?? "").replace(/\/$/, ""), key = process.env.LLM_API_KEY;
-  if (!base || !key) throw new Error("no-llm");
+  if (!base || !key) throw new StepError("llm", "LLM_BASE_URL / LLM_API_KEY are not set on this deployment");
   const r = await fetch(`${base}/chat/completions`, {
     method: "POST", headers: { authorization: `Bearer ${key}`, "content-type": "application/json" }, signal: AbortSignal.timeout(40000),
     body: JSON.stringify({ model: process.env.LLM_MODEL ?? "hyde/glm-5.3-flash", reasoning_effort: "low", response_format: { type: "json_object" },
       max_tokens: 2500, messages: [{ role: "system", content: SYS }, { role: "user", content: user }] }),
   });
-  if (!r.ok) throw new Error(`llm ${r.status}`);
+  if (!r.ok) throw new StepError("llm", `the model endpoint answered HTTP ${r.status}`);
   const j = await r.json();
   const txt: string = j.choices?.[0]?.message?.content ?? "";
   return { out: JSON.parse(txt.slice(txt.indexOf("{"), txt.lastIndexOf("}") + 1)), usage: j.usage };
@@ -232,9 +247,10 @@ async function llm(user: string) {
 
 export async function snapshot(ticker: string) {
   const c = await screener(ticker);
-  let pages: string[] = [], url = "", source = "", offset = 0, note: string | undefined;
+  let pages: string[] = [], url = "", source = "", offset = 0, note: string | undefined, why = "";
   for (const call of c.documents.concalls.slice(0, 2)) {
-    try { pages = await pdfPages(call.url, 40); url = call.url; source = `Earnings call, ${call.period}`; if (pages.join("").length > 4000) break; } catch { /* try the next one */ }
+    try { pages = await pdfPages(call.url, 40); url = call.url; source = `Earnings call, ${call.period}`; if (pages.join("").length > 4000) break; }
+    catch (e) { why = e instanceof Error ? e.message : String(e); }
   }
   if (pages.join("").length < 4000) {
     const ar = c.documents.annual_reports[0];
@@ -246,8 +262,8 @@ export async function snapshot(ticker: string) {
       offset = Math.max(0, start >= 0 ? start : 2);
       pages = first.slice(offset, offset + 22); url = ar.url; source = `Annual report ${ar.year}`;
       note = c.documents.concalls.length ? "The latest transcripts could not be read, so this comes from the annual report." : "This company does not publish earnings-call transcripts; read from its annual report instead.";
-    } catch {
-      return { research: null, reason: "The exchange's document server did not answer. Try again in a minute." };
+    } catch (e) {
+      return { research: null, reason: `Could not read the filings: ${e instanceof Error ? e.message : why || "unknown error"}.` };
     }
   }
   const body = pages.map((t, i) => `--- page ${i + 1 + offset} ---\n${t}`).join("\n").slice(0, 60000);
